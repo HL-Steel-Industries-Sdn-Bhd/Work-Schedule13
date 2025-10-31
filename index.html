@@ -135,8 +135,6 @@
       text-overflow: unset;
       box-sizing: border-box;
       pointer-events: auto;
-      padding-top: 4px;
-      padding-bottom: 4px;
       line-height: 1.05;
     }
     .assigned-project.merged { position: absolute; z-index: 3; box-sizing: border-box; }
@@ -403,11 +401,6 @@ document.addEventListener('DOMContentLoaded', function() {
       merged.style.background = projectCodeColorMap[codeMatch[1]];
     }
 
-    // ✅ 新增：单格字体缩小约 20%
-    if (dragInfo.cells.length === 1) {
-      merged.style.fontSize = '14px';
-    }
-
     const first = dragInfo.cells[0];
     const last = dragInfo.cells[dragInfo.cells.length-1];
     const firstRect = first.getBoundingClientRect();
@@ -422,6 +415,10 @@ document.addEventListener('DOMContentLoaded', function() {
     merged.style.top = top + 'px';
     merged.style.height = height + 'px';
 
+    // ✅ 自动缩放字体：根据格子宽高动态调整文字大小
+    schedule.appendChild(merged);
+    requestAnimationFrame(() => autoFitText(merged));
+
     // ✅ 点击删除功能
     merged.addEventListener('click', function(e) {
       e.stopPropagation();
@@ -434,8 +431,18 @@ document.addEventListener('DOMContentLoaded', function() {
       }
       this.remove();
     });
+  }
 
-    schedule.appendChild(merged);
+  // 自动缩放字体函数
+  function autoFitText(el) {
+    const maxHeight = el.offsetHeight - 6;
+    const maxWidth = el.offsetWidth - 8;
+    let fontSize = 18;
+    el.style.fontSize = fontSize + 'px';
+    while ((el.scrollHeight > maxHeight || el.scrollWidth > maxWidth) && fontSize > 10) {
+      fontSize -= 1;
+      el.style.fontSize = fontSize + 'px';
+    }
   }
 });
   </script>
