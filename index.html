@@ -42,16 +42,8 @@
       padding: 20px;
       overflow-x: auto;
     }
-    .schedule-container {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 30px;
-      position: relative;
-    }
-    .projects-sidebar {
-      width: 200px;
-      flex-shrink: 0;
-    }
+    .schedule-container { display: flex; gap: 20px; margin-bottom: 30px; position: relative; }
+    .projects-sidebar { width: 200px; flex-shrink: 0; }
     .project {
       padding: 14px 18px;
       color: black;
@@ -65,15 +57,8 @@
       text-align: center;
       border: 2px solid #ccc;
     }
-    .project:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    .project.dragging {
-      opacity: 0.8;
-      transform: scale(1.05);
-      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
-    }
+    .project:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.15); }
+    .project.dragging { opacity: 0.8; transform: scale(1.05); box-shadow: 0 3px 6px rgba(0,0,0,0.2); }
     .schedule {
       display: grid;
       grid-template-columns: 10% repeat(16, 5.6%);
@@ -124,12 +109,8 @@
     .cell.highlight { background-color: #e8f4fd; border: 1px dashed #3498db; }
     .cell.selected { background-color: #d4edda; border: 2px solid #28a745; }
     .cell.occupied { background-color: #fff8e1; }
-    .cell.break {
-      background-color: #ddd !important;
-      pointer-events: none;
-      color: #555;
-      font-weight: bold;
-    }
+    .cell.break { background-color: #ddd !important; pointer-events: none; color: #555; font-weight: bold; }
+
     .assigned-project {
       padding: 6px 10px;
       color: black;
@@ -158,11 +139,7 @@
       padding-bottom: 4px;
       line-height: 1.05;
     }
-    .assigned-project.merged {
-      position: absolute;
-      z-index: 3;
-      box-sizing: border-box;
-    }
+    .assigned-project.merged { position: absolute; z-index: 3; box-sizing: border-box; }
   </style>
 </head>
 <body>
@@ -171,6 +148,7 @@
       <h2>项目排班表</h2>
       <div class="date" id="todayDate">日期：</div>
     </div>
+
     <div class="schedule-container">
       <div class="projects-sidebar">
         <h3>可分配项目</h3>
@@ -181,282 +159,285 @@
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const schedule = document.getElementById('schedule');
-      const projectsContainer = document.getElementById('projects');
-      const todayDate = document.getElementById('todayDate');
-      const today = new Date();
-      todayDate.innerText = '日期：' + today.toLocaleDateString('zh-CN');
+document.addEventListener('DOMContentLoaded', function() {
+  const schedule = document.getElementById('schedule');
+  const projectsContainer = document.getElementById('projects');
+  const todayDate = document.getElementById('todayDate');
 
-      const hours = ['8:30','9:30','10:30','11:30','12:00','1:00','2:00','3:00','4:00','5:00','5:30','6:00','7:00','8:00','9:00','10:00'];
-      const breakCols = [4, 10];
+  const today = new Date();
+  todayDate.innerText = '日期：' + today.toLocaleDateString('zh-CN');
 
-      const emptyHeader = document.createElement('div');
-      emptyHeader.className = 'header';
-      emptyHeader.innerText = '员工/时间';
-      schedule.appendChild(emptyHeader);
+  const hours = ['8:30','9:30','10:30','11:30','12:00','1:00','2:00','3:00','4:00','5:00','5:30','6:00','7:00','8:00','9:00','10:00'];
+  const breakCols = [4, 10];
 
-      hours.forEach((h) => {
-        const th = document.createElement('div');
-        th.className = 'time-header';
-        th.innerText = h;
-        schedule.appendChild(th);
-      });
+  const emptyHeader = document.createElement('div');
+  emptyHeader.className = 'header';
+  emptyHeader.innerText = '员工/时间';
+  schedule.appendChild(emptyHeader);
 
-      const employees = [
-        { id: 'emp1', name: 'Albert' },
-        { id: 'emp2', name: 'Aung Thant' },
-        { id: 'emp4', name: 'William' },
-        { id: 'emp5', name: 'Myo' },
-        { id: 'emp7', name: 'Wai Phyo' },
-        { id: 'emp8', name: 'Luna' },
-        { id: 'emp9', name: 'Terrence' },
-        { id: 'emp10', name: 'Yu Jun' },
-        { id: 'emp11', name: 'Bunyao' }
-      ];
+  hours.forEach((h) => {
+    const th = document.createElement('div');
+    th.className = 'time-header';
+    th.innerText = h;
+    schedule.appendChild(th);
+  });
 
-      employees.forEach((emp, rowIndex) => {
-        const empDiv = document.createElement('div');
-        empDiv.className = 'employee-name';
-        empDiv.innerText = emp.name;
-        schedule.appendChild(empDiv);
-        hours.forEach((hour, colIndex) => {
-          const cell = document.createElement('div');
-          cell.className = 'cell';
-          cell.dataset.row = rowIndex;
-          cell.dataset.col = colIndex;
-          if (breakCols.includes(colIndex)) {
-            cell.classList.add('break');
-            cell.innerText = '休息';
-          }
-          schedule.appendChild(cell);
-        });
-      });
+  const employees = [
+    { id: 'emp1', name: 'Albert' },
+    { id: 'emp2', name: 'Aung Thant' },
+    { id: 'emp4', name: 'William' },
+    { id: 'emp5', name: 'Myo' },
+    { id: 'emp7', name: 'Wai Phyo' },
+    { id: 'emp8', name: 'Luna' },
+    { id: 'emp9', name: 'Terrence' },
+    { id: 'emp10', name: 'Yu Jun' },
+    { id: 'emp11', name: 'Bunyao' }
+  ];
 
-      const projects = [
-        { id: 'project1', name: 'Legoland (004587-40)' },
-        { id: 'project2', name: 'Legoland (004923-3)' },
-        { id: 'project3', name: 'Chefonic (008942-20)' },
-        { id: 'project4', name: 'Chefonic (007476-2)' },
-        { id: 'project5', name: 'Marlborough (007476-32)' }
-      ];
+  employees.forEach((emp, rowIndex) => {
+    const empDiv = document.createElement('div');
+    empDiv.className = 'employee-name';
+    empDiv.innerText = emp.name;
+    schedule.appendChild(empDiv);
 
-      const pastelColors = ['#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF', '#E0BBE4', '#C2F0FC'];
-      let projectCodeColorMap = {};
-      let colorIndex = 0;
-      projects.forEach(p => {
-        const codeMatch = p.name.match(/\((\d+)-/);
-        if (codeMatch) {
-          const projectCode = codeMatch[1];
-          if (!projectCodeColorMap[projectCode]) {
-            projectCodeColorMap[projectCode] = pastelColors[colorIndex % pastelColors.length];
-            colorIndex++;
-          }
-        }
-      });
-
-      let selectedCell = null;
-      let dragInfo = null;
-
-      projects.forEach(project => {
-        const projectDiv = document.createElement('div');
-        projectDiv.className = 'project';
-        projectDiv.id = project.id;
-        projectDiv.innerText = project.name;
-        const codeMatch = project.name.match(/\((\d+)-/);
-        if (codeMatch && projectCodeColorMap[codeMatch[1]]) {
-          projectDiv.style.background = projectCodeColorMap[codeMatch[1]];
-        }
-
-        projectDiv.setAttribute('draggable', 'true');
-
-        projectDiv.addEventListener('dragstart', function(e) {
-          if (!selectedCell || selectedCell.classList.contains('break')) {
-            e.preventDefault();
-            return;
-          }
-          dragInfo = {
-            project: projectDiv,
-            startCell: selectedCell,
-            cells: [],
-            projectId: project.id,
-            projectName: project.name
-          };
-          e.dataTransfer.setData('text/plain', e.target.id);
-          e.target.classList.add('dragging');
-          const clone = e.target.cloneNode(true);
-          clone.style.fontSize = (parseFloat(window.getComputedStyle(e.target).fontSize) * 0.6) + "px";
-          clone.style.padding = "6px";
-          clone.style.width = (e.target.offsetWidth / 2) + "px";
-          clone.style.height = (e.target.offsetHeight / 2) + "px";
-          clone.style.opacity = "0.7";
-          clone.style.borderRadius = "4px";
-          clone.style.position = "absolute";
-          clone.style.top = "-9999px";
-          clone.style.left = "-9999px";
-          clone.style.zIndex = "9999";
-          document.body.appendChild(clone);
-          e.dataTransfer.setDragImage(clone, clone.offsetWidth / 2, clone.offsetHeight / 2);
-          setTimeout(() => clone.remove(), 0);
-        });
-
-        projectDiv.addEventListener('dragend', function() {
-          if (dragInfo && dragInfo.cells.length > 0) {
-            createMergedProject(dragInfo);
-            dragInfo = null;
-          }
-          this.classList.remove('dragging');
-        });
-
-        projectsContainer.appendChild(projectDiv);
-      });
-
-      const allCells = document.querySelectorAll('.cell');
-      allCells.forEach(cell => {
-        if (cell.classList.contains('break')) return;
-
-        cell.addEventListener('click', function() {
-          if (selectedCell) selectedCell.classList.remove('selected');
-          selectedCell = this;
-          this.classList.add('selected');
-        });
-
-        cell.addEventListener('dragover', function(e) {
-          e.preventDefault();
-          if (dragInfo && selectedCell) {
-            highlightCells(selectedCell, this);
-          }
-        });
-
-        cell.addEventListener('dragleave', function() {
-          setTimeout(() => {
-            if (!isDraggingOverAnyCell()) clearHighlights();
-          }, 50);
-        });
-
-        cell.addEventListener('drop', function(e) {
-          e.preventDefault();
-          if (dragInfo && dragInfo.cells.length > 0) {
-            createMergedProject(dragInfo);
-            dragInfo = null;
-            if (selectedCell) {
-              selectedCell.classList.remove('selected');
-              selectedCell = null;
-            }
-          }
-          clearHighlights();
-        });
-      });
-
-      function isDraggingOverAnyCell() {
-        return Array.from(allCells).some(cell => cell.matches(':hover') || cell.querySelector(':hover'));
+    hours.forEach((hour, colIndex) => {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.row = rowIndex;
+      cell.dataset.col = colIndex;
+      if (breakCols.includes(colIndex)) {
+        cell.classList.add('break');
+        cell.innerText = '休息';
       }
+      schedule.appendChild(cell);
+    });
+  });
 
-      function highlightCells(startCell, endCell) {
-        clearHighlights();
-        if (!startCell || !endCell) return;
-        const row = startCell.dataset.row;
-        if (row !== endCell.dataset.row) return;
-        let start = parseInt(startCell.dataset.col);
-        let end = parseInt(endCell.dataset.col);
-        if (end < start) [start, end] = [end, start];
-        const validCells = [];
-        for (let c = start; c <= end; c++) {
-          if (breakCols.includes(c)) continue;
-          const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${c}"]`);
-          if (cell) {
-            cell.classList.add('highlight');
-            validCells.push(cell);
-          }
-        }
-        dragInfo.cells = validCells;
+  const projects = [
+    { id: 'project1', name: 'Legoland (004587-40)' },
+    { id: 'project2', name: 'Legoland (004923-3)' },
+    { id: 'project3', name: 'Chefonic (008942-20)' },
+    { id: 'project4', name: 'Chefonic (007476-2)' },
+    { id: 'project5', name: 'Marlborough (007476-32)' }
+  ];
+
+  const pastelColors = ['#FFB3BA', '#FFDFBA', '#FFFFBA', '#BAFFC9', '#BAE1FF', '#E0BBE4', '#C2F0FC'];
+  let projectCodeColorMap = {};
+  let colorIndex = 0;
+
+  projects.forEach(p => {
+    const codeMatch = p.name.match(/\((\d+)-/);
+    if (codeMatch) {
+      const projectCode = codeMatch[1];
+      if (!projectCodeColorMap[projectCode]) {
+        projectCodeColorMap[projectCode] = pastelColors[colorIndex % pastelColors.length];
+        colorIndex++;
       }
+    }
+  });
 
-      function clearHighlights() {
-        document.querySelectorAll('.cell.highlight').forEach(cell => cell.classList.remove('highlight'));
+  let selectedCell = null;
+  let dragInfo = null;
+
+  projects.forEach(project => {
+    const projectDiv = document.createElement('div');
+    projectDiv.className = 'project';
+    projectDiv.id = project.id;
+    projectDiv.innerText = project.name;
+
+    const codeMatch = project.name.match(/\((\d+)-/);
+    if (codeMatch && projectCodeColorMap[codeMatch[1]]) {
+      projectDiv.style.background = projectCodeColorMap[codeMatch[1]];
+    }
+
+    projectDiv.setAttribute('draggable', 'true');
+
+    projectDiv.addEventListener('dragstart', function(e) {
+      if (!selectedCell || selectedCell.classList.contains('break')) {
+        e.preventDefault();
+        return;
       }
+      dragInfo = { project: projectDiv, startCell: selectedCell, cells: [], projectId: project.id, projectName: project.name };
+      e.dataTransfer.setData('text/plain', e.target.id);
+      e.target.classList.add('dragging');
 
-      function createMergedProject(dragInfo) {
-        if (!dragInfo || dragInfo.cells.length === 0) return;
-        dragInfo.cells = dragInfo.cells.filter(c => !breakCols.includes(parseInt(c.dataset.col)));
-        if (dragInfo.cells.length === 0) return;
-        dragInfo.cells.sort((a,b)=>parseInt(a.dataset.col)-parseInt(b.dataset.col));
-        const row = dragInfo.cells[0].dataset.row;
-        const startCol = parseInt(dragInfo.cells[0].dataset.col);
-        const endCol = parseInt(dragInfo.cells[dragInfo.cells.length-1].dataset.col);
-        let segment = [];
-        let segments = [];
-        for (let c=startCol; c<=endCol; c++) {
-          if (breakCols.includes(c)) {
-            if (segment.length>0) { segments.push(segment); segment=[]; }
-          } else {
-            const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${c}"]`);
-            if (cell) segment.push(cell);
-          }
-        }
-        if (segment.length>0) segments.push(segment);
-        segments.forEach(seg=>{
-          const tempInfo={...dragInfo, cells:seg};
-          makeOneMergedBlock(tempInfo);
-        });
+      const clone = e.target.cloneNode(true);
+      clone.style.fontSize = (parseFloat(window.getComputedStyle(e.target).fontSize) * 0.6) + "px";
+      clone.style.padding = "6px";
+      clone.style.width = (e.target.offsetWidth / 2) + "px";
+      clone.style.height = (e.target.offsetHeight / 2) + "px";
+      clone.style.opacity = "0.7";
+      clone.style.borderRadius = "4px";
+      clone.style.position = "absolute";
+      clone.style.top = "-9999px";
+      clone.style.left = "-9999px";
+      clone.style.zIndex = "9999";
+      document.body.appendChild(clone);
+
+      e.dataTransfer.setDragImage(clone, clone.offsetWidth / 2, clone.offsetHeight / 2);
+      setTimeout(() => clone.remove(), 0);
+    });
+
+    projectDiv.addEventListener('dragend', function() {
+      if (dragInfo && dragInfo.cells.length > 0) {
+        createMergedProject(dragInfo);
+        dragInfo = null;
       }
+      this.classList.remove('dragging');
+    });
 
-      function makeOneMergedBlock(dragInfo) {
-        if (dragInfo.cells.length===0) return;
-        dragInfo.cells.sort((a,b)=>parseInt(a.dataset.col)-parseInt(b.dataset.col));
-        const row = dragInfo.cells[0].dataset.row;
-        const startCol = parseInt(dragInfo.cells[0].dataset.col);
-        const endCol = parseInt(dragInfo.cells[dragInfo.cells.length-1].dataset.col);
-        dragInfo.cells.forEach(c=>c.classList.add('occupied'));
+    projectsContainer.appendChild(projectDiv);
+  });
 
-        const merged = document.createElement('div');
-        merged.className = 'assigned-project merged';
-        merged.innerText = dragInfo.projectName;
-        merged.dataset.row = row;
-        merged.dataset.startCol = startCol;
-        merged.dataset.endCol = endCol;
+  const allCells = document.querySelectorAll('.cell');
+  allCells.forEach(cell => {
+    if (cell.classList.contains('break')) return;
+    cell.addEventListener('click', function() {
+      if (selectedCell) selectedCell.classList.remove('selected');
+      selectedCell = this;
+      this.classList.add('selected');
+    });
 
-        const codeMatch = dragInfo.projectName.match(/\((\d+)-/);
-        if (codeMatch && projectCodeColorMap[codeMatch[1]]) {
-          merged.style.background = projectCodeColorMap[codeMatch[1]];
-        }
-
-        // ✅ 单格字体缩小 20%
-        if (dragInfo.cells.length === 1) {
-          merged.style.fontSize = '14px';
-        }
-
-        const first = dragInfo.cells[0];
-        const last = dragInfo.cells[dragInfo.cells.length-1];
-        const firstRect = first.getBoundingClientRect();
-        const lastRect = last.getBoundingClientRect();
-        const schedRect = schedule.getBoundingClientRect();
-        const rawLeft = firstRect.left - schedRect.left;
-        const rawWidth = lastRect.right - firstRect.left;
-        const top = firstRect.top - schedRect.top;
-        const height = firstRect.height;
-
-        merged.style.left = rawLeft + 'px';
-        merged.style.width = rawWidth + 'px';
-        merged.style.top = top + 'px';
-        merged.style.height = height + 'px';
-
-        // ✅ 点击删除功能
-        merged.addEventListener('click', function(e) {
-          e.stopPropagation();
-          const row = this.dataset.row;
-          const start = parseInt(this.dataset.startCol);
-          const end = parseInt(this.dataset.endCol);
-          for (let c = start; c <= end; c++) {
-            const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${c}"]`);
-            if (cell) cell.classList.remove('occupied');
-          }
-          this.remove();
-        });
-
-        schedule.appendChild(merged);
+    cell.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      if (dragInfo && selectedCell) {
+        highlightCells(selectedCell, this);
       }
     });
+
+    cell.addEventListener('dragleave', function() {
+      setTimeout(() => {
+        if (!isDraggingOverAnyCell()) clearHighlights();
+      }, 50);
+    });
+
+    cell.addEventListener('drop', function(e) {
+      e.preventDefault();
+      if (dragInfo && dragInfo.cells.length > 0) {
+        createMergedProject(dragInfo);
+        dragInfo = null;
+        if (selectedCell) {
+          selectedCell.classList.remove('selected');
+          selectedCell = null;
+        }
+      }
+      clearHighlights();
+    });
+  });
+
+  function isDraggingOverAnyCell() {
+    return Array.from(allCells).some(cell => cell.matches(':hover') || cell.querySelector(':hover'));
+  }
+
+  function highlightCells(startCell, endCell) {
+    clearHighlights();
+    if (!startCell || !endCell) return;
+    const row = startCell.dataset.row;
+    if (row !== endCell.dataset.row) return;
+    let start = parseInt(startCell.dataset.col);
+    let end = parseInt(endCell.dataset.col);
+    if (end < start) [start, end] = [end, start];
+
+    const validCells = [];
+    for (let c = start; c <= end; c++) {
+      if (breakCols.includes(c)) continue;
+      const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${c}"]`);
+      if (cell) {
+        cell.classList.add('highlight');
+        validCells.push(cell);
+      }
+    }
+    dragInfo.cells = validCells;
+  }
+
+  function clearHighlights() {
+    document.querySelectorAll('.cell.highlight').forEach(cell => cell.classList.remove('highlight'));
+  }
+
+  function createMergedProject(dragInfo) {
+    if (!dragInfo || dragInfo.cells.length === 0) return;
+    dragInfo.cells = dragInfo.cells.filter(c => !breakCols.includes(parseInt(c.dataset.col)));
+    if (dragInfo.cells.length === 0) return;
+
+    dragInfo.cells.sort((a,b)=>parseInt(a.dataset.col)-parseInt(b.dataset.col));
+    const row = dragInfo.cells[0].dataset.row;
+    const startCol = parseInt(dragInfo.cells[0].dataset.col);
+    const endCol = parseInt(dragInfo.cells[dragInfo.cells.length-1].dataset.col);
+
+    let segment = [];
+    let segments = [];
+    for (let c=startCol; c<=endCol; c++) {
+      if (breakCols.includes(c)) {
+        if (segment.length>0) { segments.push(segment); segment=[]; }
+      } else {
+        const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${c}"]`);
+        if (cell) segment.push(cell);
+      }
+    }
+    if (segment.length>0) segments.push(segment);
+
+    segments.forEach(seg=>{
+      const tempInfo={...dragInfo, cells:seg};
+      makeOneMergedBlock(tempInfo);
+    });
+  }
+
+  function makeOneMergedBlock(dragInfo) {
+    if (dragInfo.cells.length===0) return;
+    dragInfo.cells.sort((a,b)=>parseInt(a.dataset.col)-parseInt(b.dataset.col));
+    const row = dragInfo.cells[0].dataset.row;
+    const startCol = parseInt(dragInfo.cells[0].dataset.col);
+    const endCol = parseInt(dragInfo.cells[dragInfo.cells.length-1].dataset.col);
+
+    dragInfo.cells.forEach(c=>c.classList.add('occupied'));
+
+    const merged = document.createElement('div');
+    merged.className = 'assigned-project merged';
+    merged.innerText = dragInfo.projectName;
+    merged.dataset.row = row;
+    merged.dataset.startCol = startCol;
+    merged.dataset.endCol = endCol;
+
+    const codeMatch = dragInfo.projectName.match(/\((\d+)-/);
+    if (codeMatch && projectCodeColorMap[codeMatch[1]]) {
+      merged.style.background = projectCodeColorMap[codeMatch[1]];
+    }
+
+    // ✅ 新增：单格字体缩小约 20%
+    if (dragInfo.cells.length === 1) {
+      merged.style.fontSize = '14px';
+    }
+
+    const first = dragInfo.cells[0];
+    const last = dragInfo.cells[dragInfo.cells.length-1];
+    const firstRect = first.getBoundingClientRect();
+    const lastRect = last.getBoundingClientRect();
+    const schedRect = schedule.getBoundingClientRect();
+    const rawLeft = firstRect.left - schedRect.left;
+    const rawWidth = lastRect.right - firstRect.left;
+    const top = firstRect.top - schedRect.top;
+    const height = firstRect.height;
+    merged.style.left = rawLeft + 'px';
+    merged.style.width = rawWidth + 'px';
+    merged.style.top = top + 'px';
+    merged.style.height = height + 'px';
+
+    // ✅ 点击删除功能
+    merged.addEventListener('click', function(e) {
+      e.stopPropagation();
+      const row = this.dataset.row;
+      const start = parseInt(this.dataset.startCol);
+      const end = parseInt(this.dataset.endCol);
+      for (let c = start; c <= end; c++) {
+        const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${c}"]`);
+        if (cell) cell.classList.remove('occupied');
+      }
+      this.remove();
+    });
+
+    schedule.appendChild(merged);
+  }
+});
   </script>
 </body>
 </html>
